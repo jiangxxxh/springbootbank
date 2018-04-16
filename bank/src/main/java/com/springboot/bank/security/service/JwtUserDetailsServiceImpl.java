@@ -1,4 +1,4 @@
-package com.springboot.bank.service;
+package com.springboot.bank.security.service;
 
 import com.springboot.bank.domain.User;
 import com.springboot.bank.mapper.UserMapper;
@@ -7,10 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
 
 /**
  * 用户详细信息的服务类
  */
+@Service
 public class JwtUserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private UserMapper userMapper;

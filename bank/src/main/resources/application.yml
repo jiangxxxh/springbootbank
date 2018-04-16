@@ -11,6 +11,9 @@ spring:
   jackson:
     serialization:
       indent_output: true
+  mobile:
+    sitepreference:
+      enabled:  true
 
 mybatis:
   type-aliases-package: com.springboot.bank.domain
@@ -19,3 +22,15 @@ mybatis:
 logging:
   level:
     org.springframework.security: info
+
+# JWT
+jwt:
+  header:  Authorization
+  secret:  mySecret
+# token
+  expiration:  604800
+  tokenHead:  Bearer
+  router:
+    authentication:
+      path: auth
+      refresh: refresh
