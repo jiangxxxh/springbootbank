@@ -30,7 +30,7 @@ jwt:
 # token
   expiration:  604800
   tokenHead:  Bearer
-  router:
+  route:
     authentication:
       path: auth
       refresh: refresh
