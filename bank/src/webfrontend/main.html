@@ -5,7 +5,7 @@
   <meta name="viewport"
         content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>H-ui</title>
+  <title>华夏银行</title>
   <link rel="shortcut icon" href="images/huaxia.ico" type="image/x-icon">
   <link rel="stylesheet" href="static/h-ui/css/H-ui.min.css">
   <link rel="stylesheet" href="static/h-ui.admin/css/H-ui.admin.css">
@@ -39,17 +39,17 @@
               <i class="Hui-iconfont">&#xe6d5;</i>
             </a>
             <ul class="dropDown-menu menu radius box-shadow">
-              <li><a href="javascript:;">修改密码</a></li>
-              <li><a href="javascript:;" onclick="logout()">退出</a></li>
+              <li><a href="javascript:changePassword('修改密码','changePassword.html',400,300);">修改密码</a></li>
+              <li><a href="javascript:logout();">退出</a></li>
             </ul>
           </li>
 
-          <li id="Hui-msg">
+          <!--<li id="Hui-msg">
             <a href="#" title="消息">
               <span class="badge badge-danger">7</span>
               <i class="Hui-iconfont" style="font-size:18px">&#xe68a;</i>
             </a>
-          </li>
+          </li>-->
 
           <li id="Hui-skin" class="dropDown right dropDown_hover">
             <a href="javascript:;" class="dropDown_A" title="换肤">
@@ -123,19 +123,16 @@
       <dd>
         <ul>
           <li>
-            <a data-href="../index.jsp" data-title="系统设置" href="javascript:void(0);">系统设置</a>
+            <a data-href="system/setting.html" data-title="系统设置" href="javascript:void(0);">系统设置</a>
           </li>
           <li>
-            <a data-href="../toyedit.jsp" data-title="栏目管理" href="javascript:void(0);">栏目管理</a>
+            <a data-href="system/dictionary.html" data-title="数据字典" href="javascript:void(0);">数据字典</a>
           </li>
           <li>
-            <a data-href="../ToyServlet" data-title="数据字典" href="javascript:void(0);">数据字典</a>
+            <a data-href="system/log.html" data-title="系统日志" href="javascript:void(0);">系统日志</a>
           </li>
           <li>
-            <a data-href="../jqueryvalidate.html" data-title="系统日志" href="javascript:void(0);">系统日志</a>
-          </li>
-          <li>
-            <a data-href="../jquery.jsp" data-title="屏蔽词" href="javascript:void(0);">屏蔽词</a>
+            <a data-href="system/userlist.html" data-title="系统用户管理" href="javascript:void(0);">屏蔽词</a>
           </li>
         </ul>
       </dd>
@@ -191,6 +188,10 @@
 <script src="js/bank.js"></script>
 <script>
   $(window).on('load', () => {
+      // 隐藏系统设置菜单
+      $("#menu-system").hide()
+
+      // 加载当前用户信息
       $.ajax({
           url : BANK_URL+"user",
           type : "get",
@@ -198,18 +199,59 @@
           dataType : "json",
           headers : createAuthorizationTokenHeader(),
           success : function (user,textStatus,jqXHR) {
-              $("#username").html(user.username)
-              $("#loginDate").html(user.loginDate)
+              //console.log(user,textStatus,jqXHR)
+              if(user){
+                  $("#username").html(user.username)
+                  $("#loginDate").html(user.loginDate)
+                  // 根据角色加载系统设置菜单
+                  loadMenu(user.authorities);
+              }else{
+                  location.href = "index.html"
+              }
+
+          },
+          error : function (jqXHR,textStatus,errorThrows) {
+              console.log("Spring exception")
+              layer.confirm("非授权用户，请先登录！",()=>{
+                  location.href = "index.html"
+              })
           }
       })
   })
 
+  /**
+   *  修改密码
+   * @param title
+   * @param url
+   * @param w
+   * @param h
+   */
+  function changePassword(title,url,w,h) {
+      layer_show(title,url,w,h)
+  }
+
+  // 注销退出
   function logout() {
     layer.confirm("是否确认退出?", () => {
       removeJwtToken()
       location.href = "index.html"
     })
   }
+
+  function loadMenu(authorities) {
+      //console.log(authorities)
+      authorities.forEach((authoritiesItem)=>{
+          if(authoritiesItem.authority == 'ROLE_ADMIN'){
+              // 显示系统管理员的菜单
+              $("#menu-system").show()
+          }else if(authoritiesItem.authority == 'ROLE_MANAGER'){
+              // 显示经理的菜单
+          }else if(authoritiesItem.authority == 'ROLE_CLERK'){
+              // 显示办事员的菜单
+          }
+      })
+  }
+
 </script>
 </body>
 </html>
