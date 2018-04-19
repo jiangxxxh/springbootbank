@@ -23,8 +23,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 /**
  * Web 安全配置类
- *
- * @author SONG
+ * 第一步
+ * @author JiangXh
  */
 @Configuration
 @EnableWebSecurity
@@ -40,9 +40,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   @Autowired
   private JwtUserDetailsService jwtUserDetailsService;
 
+  // yml 文件中的Authorization
   @Value("${jwt.header}")
   private String tokenHeader;
 
+  // yml 文件中的auth
   @Value("${jwt.route.authentication.path}")
   private String authenticationPath;
 
@@ -78,7 +80,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         .authorizeRequests()
 
-        .antMatchers("/api/auth/**").permitAll()
+        .antMatchers("/api/auth/**").permitAll()  /* antMatchers()方法所设定的路径支持Ant风格的通配符 */
         .anyRequest().authenticated();
 
     // Custom JWT based security filter

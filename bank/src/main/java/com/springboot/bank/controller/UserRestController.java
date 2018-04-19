@@ -2,6 +2,7 @@ package com.springboot.bank.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.springboot.bank.domain.User;
 import com.springboot.bank.security.JwtTokenUtil;
 import com.springboot.bank.security.domain.JwtUser;
 import com.springboot.bank.service.UserService;
@@ -13,6 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * 获取已授权用户信息
@@ -52,10 +56,7 @@ public class UserRestController {
           @RequestParam("password")String password,
           HttpServletRequest request
   ){
-    System.out.println("加密前："+password);
     password = passwordEncoder.encode(password);
-    System.out.println("加密后："+password);
-
     String token = request.getHeader(tokenHeader).substring(7);
     String username = jwtTokenUtil.getUsernameFromToken(token);
     JwtUser user = (JwtUser) userDetailsService.loadUserByUsername(username);
@@ -63,6 +64,48 @@ public class UserRestController {
     int count = userService.changePassword(user.getId(),password);
     return ResponseEntity.ok(count);
 
+  }
+
+  @RequestMapping(value = "/users",method = RequestMethod.GET)
+  public ResponseEntity<?> getUsers(){
+    List<User> users = userService.find();
+    return new ResponseEntity<>(users,HttpStatus.OK);
+  }
+
+  @RequestMapping(value = "/users/{id}",method = RequestMethod.GET)
+  public ResponseEntity<?> getUsers(@PathVariable("id")Integer id){
+    User user = userService.find(id);
+    return new ResponseEntity<>(user,HttpStatus.OK);
+  }
+
+  @RequestMapping(value = "users",method = RequestMethod.POST)
+  public ResponseEntity<?> add(@RequestBody User user){
+    // 加密
+    user.setPassword(passwordEncoder.encode(user.getPassword()));
+    // 设置默认日期
+    user.setLastPasswordResetDate(new Date());
+    user.setLoginDate(new Date());
+    int count = userService.addUser(user);
+    return ResponseEntity.ok(count);
+  }
+
+  @RequestMapping(value = "users",method = RequestMethod.PUT)
+  public ResponseEntity<?> modify(@RequestBody User user){
+    int count = userService.modify(user);
+    return ResponseEntity.ok(count);
+  }
+
+  @PostMapping("/userauthority")
+  public ResponseEntity<?> addUserAuthority(@RequestParam("userId") Integer userId,
+                                            @RequestParam("checkbox")String checkbox){
+    int count = 0;
+    String[] strbox = checkbox.split(",");
+    for(String s:strbox){
+      if(s!=null || !s.equals("")){
+        count += userService.addUserAuthority(userId,Integer.parseInt(s));
+      }
+    }
+    return ResponseEntity.ok(count);
   }
 
 }

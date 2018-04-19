@@ -21,6 +21,7 @@ public class User implements Serializable {
     private String email;
     private Integer enabled;
     private Date lastPasswordResetDate;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date loginDate;
     private List<Authority> authorities;
 
