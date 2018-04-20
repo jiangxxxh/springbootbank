@@ -69,12 +69,14 @@ public class UserRestController {
   }
 
   @RequestMapping(value = "/users",method = RequestMethod.GET)
+  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<?> getUsers(){
     List<User> users = userService.find();
     return new ResponseEntity<>(users,HttpStatus.OK);
   }
 
   @RequestMapping(value = "/users/{id}",method = RequestMethod.GET)
+  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<?> getUsers(@PathVariable("id")Integer id){
     User user = userService.find(id);
     return new ResponseEntity<>(user,HttpStatus.OK);
@@ -93,12 +95,14 @@ public class UserRestController {
   }
 
   @RequestMapping(value = "/users",method = RequestMethod.PUT)
+  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<?> modify(@RequestBody User user){
     int count = userService.modify(user);
     return ResponseEntity.ok(count);
   }
 
   @RequestMapping(value = "/userauthority",method = RequestMethod.POST)
+  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<?> addUserAuthority(@RequestParam("userId") Integer userId,
                                             @RequestParam("authorityIds")Integer[] authorityIds){
     int count = 0;
@@ -108,6 +112,7 @@ public class UserRestController {
   }
 
   @GetMapping("/finduserauthority")
+  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<?> findUserAuthority(@RequestParam("userId") Integer userId){
     List<Integer> authorities = userService.findUserAuthority(userId);
     return new ResponseEntity<>(authorities,HttpStatus.OK);
