@@ -11,10 +11,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -78,7 +80,8 @@ public class UserRestController {
     return new ResponseEntity<>(user,HttpStatus.OK);
   }
 
-  @RequestMapping(value = "users",method = RequestMethod.POST)
+  @RequestMapping(value = "/users",method = RequestMethod.POST)
+  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<?> add(@RequestBody User user){
     // 加密
     user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -89,23 +92,25 @@ public class UserRestController {
     return ResponseEntity.ok(count);
   }
 
-  @RequestMapping(value = "users",method = RequestMethod.PUT)
+  @RequestMapping(value = "/users",method = RequestMethod.PUT)
   public ResponseEntity<?> modify(@RequestBody User user){
     int count = userService.modify(user);
     return ResponseEntity.ok(count);
   }
 
-  @PostMapping("/userauthority")
+  @RequestMapping(value = "/userauthority",method = RequestMethod.POST)
   public ResponseEntity<?> addUserAuthority(@RequestParam("userId") Integer userId,
-                                            @RequestParam("checkbox")String checkbox){
+                                            @RequestParam("authorityIds")Integer[] authorityIds){
     int count = 0;
-    String[] strbox = checkbox.split(",");
-    for(String s:strbox){
-      if(s!=null || !s.equals("")){
-        count += userService.addUserAuthority(userId,Integer.parseInt(s));
-      }
-    }
+    System.out.println(Arrays.toString(authorityIds));
+    count = userService.addUserAuthority(userId,authorityIds);
     return ResponseEntity.ok(count);
+  }
+
+  @GetMapping("/finduserauthority")
+  public ResponseEntity<?> findUserAuthority(@RequestParam("userId") Integer userId){
+    List<Integer> authorities = userService.findUserAuthority(userId);
+    return new ResponseEntity<>(authorities,HttpStatus.OK);
   }
 
 }
