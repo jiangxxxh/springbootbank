@@ -1,5 +1,6 @@
 package com.springboot.bank;
 
+import com.springboot.bank.domain.User;
 import com.springboot.bank.service.UserService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -37,6 +39,16 @@ public class ApplicationTests {
 
     @Test
     public void addUserAu() {
-        userService.addUserAuthority(6,new Integer[]{3});
+        userService.addUserAuthority(6, new Integer[]{3});
+    }
+
+    @Test
+    public void find() {
+        for (int i = 0; i < 3; i++) {
+            List<User> users = userService.find();
+            users.forEach(user -> {
+                System.out.println(user.getUsername() + " " + user.getEmail());
+            });
+        }
     }
 }

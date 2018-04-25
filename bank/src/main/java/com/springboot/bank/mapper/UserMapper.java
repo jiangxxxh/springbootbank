@@ -1,6 +1,7 @@
 package com.springboot.bank.mapper;
 
 import com.springboot.bank.domain.User;
+import com.springboot.bank.util.RedisCache;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.List;
 /**
  *
  */
+@CacheNamespace(implementation = RedisCache.class)
 public interface UserMapper {
 
     User findByUsername(@Param("username")String username);
